@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../axiosConfig';
 import AppointmentForm from '../components/AppointmentForm';
-import AppointmentList from '../components/AppointmentList';
+// import AppointmentList from '../components/AppointmentList';
 import { useAuth } from '../context/AuthContext';
 
 const Appointments = () => {
@@ -46,12 +46,12 @@ const Appointments = () => {
       {loading && (
         <p className="text-sm text-gray-500 mb-3">Loading appointments…</p>
       )}
-
+{/* 
       <AppointmentList
         appointments={appointments}
         setAppointments={setAppointments}
         setEditingAppointment={setEditingAppointment}
-      />
+      /> */}
     </div>
   );
 };
