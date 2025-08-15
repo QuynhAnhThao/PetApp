@@ -11,31 +11,39 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
-      <Link to="/" className="text-2xl font-bold">Your apps name</Link>
-      <div>
+    <nav className="bg-blue-950 text-white">
+      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        <Link to="/" className="font-bold text-xl hover:opacity-90">
+          Pet Clinic Management
+        </Link>
+
         {user ? (
-          <>
+          <div className="flex items-center gap-5">
             <Link to="/appointments" className="hover:opacity-90">Appointment</Link>
             <Link to="/pets" className="hover:opacity-90">Pets</Link>
             <Link to="/profile" className="hover:opacity-90">Profile</Link>
             <button
               onClick={handleLogout}
-              className="bg-red-500 px-4 py-2 rounded hover:bg-red-700"
+              className="bg-red-500 px-3 py-1.5 rounded hover:bg-red-600"
             >
               Logout
             </button>
-          </>
+          </div>
         ) : (
-          <>
-            <Link to="/login" className="mr-4">Login</Link>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/login"
+              className="bg-white text-zinc-900 px-3 py-1.5 rounded font-semibold hover:opacity-90"
+            >
+              Login
+            </Link>
             <Link
               to="/register"
-              className="bg-green-500 px-4 py-2 rounded hover:bg-green-700"
+              className="bg-white/10 px-3 py-1.5 rounded font-semibold hover:bg-white/20"
             >
               Register
             </Link>
-          </>
+          </div>
         )}
       </div>
     </nav>
