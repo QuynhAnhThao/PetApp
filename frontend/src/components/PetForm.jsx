@@ -45,6 +45,13 @@ const PetForm = ({ pets, setPets, editingPet, setEditingPet }) => {
   // handle form submission for creating or updating a pet
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // require fields
+    if (!formData.name || !formData.species || !formData.owner.name || !formData.owner.phone) {
+    alert('Please fill in all required fields.');
+    return;
+    };
+
     try {
       if (editingPet) {
         // update existing pet
@@ -94,6 +101,7 @@ const PetForm = ({ pets, setPets, editingPet, setEditingPet }) => {
         value={formData.name}
         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
         className="w-full mb-4 p-2 border rounded"
+        required
       />
       <input
         type="text"
@@ -101,6 +109,7 @@ const PetForm = ({ pets, setPets, editingPet, setEditingPet }) => {
         value={formData.species}
         onChange={(e) => setFormData({ ...formData, species: e.target.value })}
         className="w-full mb-4 p-2 border rounded"
+        required
       />
       <input
         type="text"
@@ -123,6 +132,7 @@ const PetForm = ({ pets, setPets, editingPet, setEditingPet }) => {
         value={formData.owner.name}
         onChange={handleOwnerChange}
         className="w-full mb-4 p-2 border rounded"
+        required
       />
       <input
         type="text"
@@ -131,6 +141,7 @@ const PetForm = ({ pets, setPets, editingPet, setEditingPet }) => {
         value={formData.owner.phone}
         onChange={handleOwnerChange}
         className="w-full mb-4 p-2 border rounded"
+        required
       />
       <input
         type="email"

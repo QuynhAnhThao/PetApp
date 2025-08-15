@@ -6,19 +6,26 @@ const TreatmentForm = ({ petId, setTreatments }) => {
   const { user } = useAuth();
 
   const empty = { date: '', description: '', vet: '', treatmentCost: '', medicineCost: '' };
-  const [form, setForm] = useState(empty);
+  const [formData, setForm] = useState(empty);
 
-  const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const onChange = (e) => setForm({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // require fields
+    if (!formData.date || !formData.vet || !formData.treatmentCost || !formData.description) {
+    alert('Please fill in all required fields.');
+    return;
+    };
+  
     try {
       const payload = {
-        date: form.date,
-        description: form.description,
-        vet: form.vet,
-        treatmentCost: Number(form.treatmentCost),
-        ...(form.medicineCost !== '' ? { medicineCost: Number(form.medicineCost) } : {}),
+        date: formData.date,
+        description: formData.description,
+        vet: formData.vet,
+        treatmentCost: Number(formData.treatmentCost),
+        ...(formData.medicineCost !== '' ? { medicineCost: Number(formData.medicineCost) } : {}),
       };
 
       
@@ -47,37 +54,41 @@ const TreatmentForm = ({ petId, setTreatments }) => {
     <input
       type="date"
       name="date"
-      value={form.date}
+      value={formData.date}
       onChange={onChange}
+      required
     />
     <input
       type="text"
       name="description"
       placeholder="Description"
-      value={form.description}
+      value={formData.description}
       onChange={onChange}
+      required
     />
     <input
       type="text"
       name="vet"
       placeholder="Vet Name"
-      value={form.vet}
+      value={formData.vet}
       onChange={onChange}
+      required
     />
     <input
       type="number"
       step="0.01"
       name="treatmentCost"
       placeholder="Treatment Cost"
-      value={form.treatmentCost}
+      value={formData.treatmentCost}
       onChange={onChange}
+      required
     />
     <input
       type="number"
       step="0.01"
       name="medicineCost"
       placeholder="Medicine Cost"
-      value={form.medicineCost}
+      value={formData.medicineCost}
       onChange={onChange}
     />
 
