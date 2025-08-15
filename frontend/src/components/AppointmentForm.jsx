@@ -14,6 +14,8 @@ const AppointmentForm = ({ appointments, setAppointments, editingAppointment, se
       date: '', 
       description: ''
     });
+
+    // datetime
     const toLocalInputValue = (value) => {
     if (!value) return '';
     const d = new Date(value);
@@ -46,11 +48,13 @@ const AppointmentForm = ({ appointments, setAppointments, editingAppointment, se
     // handle form submission for creating or updating an appointment
     const handleSubmit = async (e) => {
       e.preventDefault();
+      
+      // require fields
       if (!formData.petName || !formData.ownerName || !formData.ownerPhone || !formData.date) {
       alert('Please fill in all required fields.');
       return;
     }
-      // Convert datetime-local string to ISO before sending
+      // convert datetime-local string to ISO before sending
       const payload = { ...formData, date: new Date(formData.date).toISOString() };
       try {
         // if edit appointment, send PUT request (update)
