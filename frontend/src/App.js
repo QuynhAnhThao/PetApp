@@ -4,6 +4,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Appointments from './pages/Appointment';
+import Pets from './pages/Pets';
+import PetDetails from './pages/PetDetails';
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/pets" element={<Pets />} />
+        <Route path="/pets/:petId" element={<PetDetails />} />
         <Route path="/appointments" element={<Appointments />} />
       </Routes>
     </Router>
