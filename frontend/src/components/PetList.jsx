@@ -67,7 +67,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosConfig';
 
-const PetList = ({ pets, setPets, setEditingPet }) => {
+const PetList = ({ pets, setPets }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 

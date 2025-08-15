@@ -13,8 +13,7 @@ const PetForm = ({ pets, setPets, editingPet, setEditingPet }) => {
     owner: {
       name: '',
       phone: '',
-      email: '',
-      address: ''
+      email: ''
     }
   });
   // populate form fields when editing an existing pet
@@ -25,7 +24,7 @@ const PetForm = ({ pets, setPets, editingPet, setEditingPet }) => {
         species: editingPet.species || '',
         breed: editingPet.breed || '',
         age: editingPet.age || '',
-        owner: editingPet.owner || { name: '', phone: '', email: '', address: '' }
+        owner: editingPet.owner || { name: '', phone: '', email: '' }
       });
     } else {
       // if no pet is being edited, reset form to empty values
@@ -37,8 +36,7 @@ const PetForm = ({ pets, setPets, editingPet, setEditingPet }) => {
         owner: {
           name: '',
           phone: '',
-          email: '',
-          address: ''
+          email: ''
         }
       });
     }
@@ -70,7 +68,7 @@ const PetForm = ({ pets, setPets, editingPet, setEditingPet }) => {
         species: '',
         breed: '',
         age: '',
-        owner: { name: '', phone: '', email: '', address: '' }
+        owner: { name: '', phone: '', email: '' }
       });
     } catch (error) {
       alert('Failed to save pet.');
@@ -139,14 +137,6 @@ const PetForm = ({ pets, setPets, editingPet, setEditingPet }) => {
         name="email"
         placeholder="Owner Email"
         value={formData.owner.email}
-        onChange={handleOwnerChange}
-        className="w-full mb-4 p-2 border rounded"
-      />
-      <input
-        type="text"
-        name="address"
-        placeholder="Owner Address"
-        value={formData.owner.address}
         onChange={handleOwnerChange}
         className="w-full mb-4 p-2 border rounded"
       />
