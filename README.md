@@ -1,6 +1,13 @@
 
 1. **Project Overview**
-
+* This is the pet clinic management app, which help users (vet, clinic staffs) to manage their pets and appointments for pets. The app included below features:
+    * Authentication: Register & Login
+    * Appointment management: 
+        * Create appointments with date & time, view all appointments, update appointment, delete appointment.
+    * Pet Management: 
+        * Create new pet, View all pets, View detail pet, Update pet, Delete pet.
+        * For each pet, users can view treatments, create new treatment, and delete treatment.
+    
 ---
 
 2. **Project Setup**
