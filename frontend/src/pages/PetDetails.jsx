@@ -11,6 +11,7 @@ const PetDetails = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // state for pet info, treatments, edit mode, and form data
   const [pet, setPet] = useState(null);
   const [treatments, setTreatments] = useState([]);
   const [editing, setEditing] = useState(false);
@@ -23,9 +24,11 @@ const PetDetails = () => {
     owner: { name: '', phone: '', email: '' },
   });
 
+  // fetch pet details from API when component mounts or petId changes
   useEffect(() => {
     const fetchPet = async () => {
       try {
+        // send GET request to get pet inffo by id
         const res = await axiosInstance.get(`/api/pets/${petId}`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
@@ -52,6 +55,7 @@ const PetDetails = () => {
     if (user?.token) fetchPet();
   }, [petId, user]);
 
+  // handle form input changes (including nested owner fields)
   const onChange = (e) => {
     const { name, value } = e.target;
     if (name.startsWith('owner.')) {
@@ -62,6 +66,7 @@ const PetDetails = () => {
     }
   };
 
+  // save updated pet details
   const handleSave = async (e) => {
     e.preventDefault();
     try {
@@ -77,11 +82,11 @@ const PetDetails = () => {
           email: form.owner.email.trim() || undefined,
         },
       };
-
+      // send PUT request to update pet
       const res = await axiosInstance.put(`/api/pets/${petId}`, payload, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
-
+      // update pets in local state
       setPet(res.data);
       setEditing(false);
     } catch (err) {
@@ -96,6 +101,7 @@ const PetDetails = () => {
 
   if (!pet) return <p>Loading...</p>;
 
+  // render UI for pet details page
   return (
     <div className="container mx-auto px-4 py-8 mb-5 mt-5">
       <div className="flex items-center justify-between mb-4">
@@ -103,7 +109,7 @@ const PetDetails = () => {
           onClick={() => navigate('/pets')}
           className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
         >
-          ← Back
+          Back
         </button>
 
         {!editing ? (
