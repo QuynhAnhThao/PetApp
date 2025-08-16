@@ -4,15 +4,10 @@ import { useAuth } from '../context/AuthContext';
 
 const TreatmentForm = ({ petId, setTreatments }) => {
   const { user } = useAuth();
-
+  const empty = { date: '', description: '', vet: '', treatmentCost: '', medicineCost: '' };
+  
   // form data state for all input fields
-  const [formData, setForm] = useState(
-    { date: '', 
-      description: '', 
-      vet: '', 
-      treatmentCost: '', 
-      medicineCost: '' }
-  );
+  const [formData, setForm] = useState(empty);
 
   // update form state when any input field changes
   const onChange = (e) => setForm({ ...formData, [e.target.name]: e.target.value });
