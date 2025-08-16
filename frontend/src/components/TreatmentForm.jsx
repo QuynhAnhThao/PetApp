@@ -5,11 +5,19 @@ import { useAuth } from '../context/AuthContext';
 const TreatmentForm = ({ petId, setTreatments }) => {
   const { user } = useAuth();
 
-  const empty = { date: '', description: '', vet: '', treatmentCost: '', medicineCost: '' };
-  const [formData, setForm] = useState(empty);
+  // form data state for all input fields
+  const [formData, setForm] = useState(
+    { date: '', 
+      description: '', 
+      vet: '', 
+      treatmentCost: '', 
+      medicineCost: '' }
+  );
 
+  // update form state when any input field changes
   const onChange = (e) => setForm({ ...formData, [e.target.name]: e.target.value });
 
+  // handle form submission for adding new treatment
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -18,7 +26,8 @@ const TreatmentForm = ({ petId, setTreatments }) => {
     alert('Please fill in all required fields.');
     return;
     };
-  
+    
+    // prepare payload to convert costs to numbers and include medicineCost only if not empty
     try {
       const payload = {
         date: formData.date,
@@ -28,16 +37,17 @@ const TreatmentForm = ({ petId, setTreatments }) => {
         ...(formData.medicineCost !== '' ? { medicineCost: Number(formData.medicineCost) } : {}),
       };
 
-      
+      // send POST request to create treatment
       const { data: added } = await axiosInstance.post(
         `/api/pets/${petId}/treatment`,
         payload,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
-      
+      // update treatment list in local state
       setTreatments((prev) => ([...(prev || []), added]));
-
+      
+      // reset form
       setForm(empty);
     } catch (err) {
       const msg = err?.response?.data?.message || 'Failed to add treatment.';
@@ -46,11 +56,13 @@ const TreatmentForm = ({ petId, setTreatments }) => {
     }
   };
 
+  // render form UI for treatment creation
   return (
   <form
     onSubmit={handleSubmit}
     className="bg-gray-50 p-4 rounded border mb-4 grid gap-2 md:grid-cols-6"
   >
+    {/* input fields */}
     <input
       type="date"
       name="date"
@@ -92,7 +104,7 @@ const TreatmentForm = ({ petId, setTreatments }) => {
       onChange={onChange}
     />
 
-   
+   {/* submit button */}
     <button
       type="submit"
       className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
