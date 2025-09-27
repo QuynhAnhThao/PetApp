@@ -1,103 +1,47 @@
-const Appointment = require('../models/Appointment');
+// // controllers/appointment.controller.js
+const appointmentService = require("../services/appointmentService");
 
-// Get all appointments
-const getAppointments = async (req, res) => {
+// POST /api/appointments
+exports.createAppointment = async (req, res) => {
   try {
-    // find appointment for linked user in db
-    const appointments = await Appointment.find({ userId: req.user.id }); 
+    const data = await appointmentService.createAppointment(req.body);
+    res.status(201).json(data);
+  } catch (error) {
+    const code = /required|invalid/i.test(error.message) ? 400 : 500;
+    res.status(code).json({ message: error.message });
+  }
+};
 
-    // send the retrieved appointments back to the user
-    res.json(appointments); 
+// GET /api/appointments?userId=&petId=&from=&to=&limit=&skip=
+exports.getAppointments = async (req, res) => {
+  try {
+    const data = await appointmentService.getAppointments(req.query);
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Create new appointment
-const addAppointment = async (req, res) => {
-  const { petName, ownerName, ownerPhone, date, description } = req.body;
+// PATCH/PUT /api/appointments/:id
+exports.updateAppointment = async (req, res) => {
   try {
-    if (!petName || !ownerName || !ownerPhone || !date) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
-    const time = new Date(date).getTime();
-    if (Number.isNaN(time)) {
-      return res.status(400).json({ message: 'Invalid date/time' });
-    };
-    // create new appointment record in db
-    const appointment = await Appointment.create({
-      userId: req.user.id,
-      petName,
-      ownerName,
-      ownerPhone,
-      date: new Date(date), // store as Date (datetime)
-      description
-    });
-
-    // send the newly created appointment back to the user
-    res.status(201).json(appointment);
+    const data = await appointmentService.updateAppointment(req.params.id, req.body);
+    res.json(data); // updateOne result
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    const code = /invalid objectid/i.test(error.message) ? 400
+              : /not found/i.test(error.message) ? 404 : 500;
+    res.status(code).json({ message: error.message });
   }
 };
 
-// Update existing appointment
-const updateAppointment = async (req, res) => {
-  const { petName, ownerName, ownerPhone, date, description } = req.body;
+// DELETE /api/appointments/:id
+exports.deleteAppointment = async (req, res) => {
   try {
-    // search for the appointment in the database by ID
-    const appointment = await Appointment.findById(req.params.id);
-
-    // if not found, show message
-    if (!appointment)
-      return res.status(404).json({ message: 'Appointment not found' });
-
-    // if found, update appointment fields only if new values are provided
-    appointment.petName = petName || appointment.petName;
-    appointment.ownerName = ownerName || appointment.ownerName;
-    appointment.ownerPhone = ownerPhone || appointment.ownerPhone;
-    if (date) {
-      const ts = new Date(date).getTime();
-      if (Number.isNaN(ts)) {
-        return res.status(400).json({ message: 'Invalid date/time' });
-      }
-      appointment.date = new Date(date);
-    };
-    appointment.description = description || appointment.description;
-
-    // save the updated appointment in the database
-    const updatedAppointment = await appointment.save();
-
-    // send the updated appointment back to the user
-    res.json(updatedAppointment);
+    const data = await appointmentService.deleteAppointment(req.params.id);
+    res.json(data);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    const code = /invalid objectid/i.test(error.message) ? 400
+              : /not found/i.test(error.message) ? 404 : 500;
+    res.status(code).json({ message: error.message });
   }
-};
-
-// Delete appointment
-const deleteAppointment = async (req, res) => {
-  try {
-    // search for the appointment in the database by ID
-    const appointment = await Appointment.findById(req.params.id);
-
-    // if not found, show error
-    if (!appointment)
-      return res.status(404).json({ message: 'Appointment not found' });
-
-    // if found, remove appointment from db
-    await appointment.remove();
-
-    // send confirmation back to the user
-    res.json({ message: 'Appointment deleted' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-module.exports = {
-  getAppointments,
-  addAppointment,
-  updateAppointment,
-  deleteAppointment,
 };
