@@ -1,47 +1,56 @@
-// // controllers/appointment.controller.js
 const appointmentService = require("../services/appointmentService");
+const { UserObserver, PetObserver, notifier } = require("../domain/AppointmentObserver")
+const { AdapterMail } = require("../domain/AdapterEmail")
 
-// POST /api/appointments
-exports.createAppointment = async (req, res) => {
+
+// Create appointment
+createAppointment = async (req, res) => {
   try {
-    const data = await appointmentService.createAppointment(req.body);
+    const data = await appointmentService.createAppointment({ ...req.body, userId: req.user.id });
+    // Observer
+    notifier.subscribe(new UserObserver(data.userId.name));
+    notifier.subscribe(new PetObserver(data.petId.name));
+    notifier.notify(JSON.stringify({
+      type: 'APPOINTMENT_CREATED'
+    }));
+    // Adapter
+    const mailAdapter = new AdapterMail()
+    await mailAdapter.sendEmail("quynhanhthao.161@gmail.com", "Subject", "Meow")
     res.status(201).json(data);
-  } catch (error) {
-    const code = /required|invalid/i.test(error.message) ? 400 : 500;
-    res.status(code).json({ message: error.message });
-  }
+  } catch (error) { res.status(400).json({ message: error.message || 'Failed to create appointment' }); }
 };
 
-// GET /api/appointments?userId=&petId=&from=&to=&limit=&skip=
-exports.getAppointments = async (req, res) => {
+// Get appointments
+getAppointments = async (req, res) => {
+  const { petId } = req.query
   try {
-    const data = await appointmentService.getAppointments(req.query);
+    const data = await appointmentService.getAppointments(petId);
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// PATCH/PUT /api/appointments/:id
-exports.updateAppointment = async (req, res) => {
+// Update appointment
+updateAppointment = async (req, res) => {
   try {
     const data = await appointmentService.updateAppointment(req.params.id, req.body);
-    res.json(data); // updateOne result
-  } catch (error) {
-    const code = /invalid objectid/i.test(error.message) ? 400
-              : /not found/i.test(error.message) ? 404 : 500;
-    res.status(code).json({ message: error.message });
-  }
+    res.json(data);
+  } catch (error) { res.status(400).json({ message: error.message || 'Failed to update appointment' }); }
 };
 
-// DELETE /api/appointments/:id
-exports.deleteAppointment = async (req, res) => {
+// Delete appointment
+deleteAppointment = async (req, res) => {
   try {
     const data = await appointmentService.deleteAppointment(req.params.id);
     res.json(data);
-  } catch (error) {
-    const code = /invalid objectid/i.test(error.message) ? 400
-              : /not found/i.test(error.message) ? 404 : 500;
-    res.status(code).json({ message: error.message });
-  }
+  } catch (err) { res.status(400).json({ message: err?.message || 'Failed to delete appointment' }); }
 };
+
+module.exports = {
+  createAppointment,
+  getAppointments,
+  updateAppointment,
+  deleteAppointment
+};
+

@@ -1,4 +1,3 @@
-// routes/petRoutes.js (CJS)
 const express = require('express');
 // const { protect } = require('../middleware/authMiddleware');
 // const { requireAdmin } = require('../middleware/roleMiddleware');
@@ -12,19 +11,17 @@ const {
   addTreatment,
   deleteTreatment
 } = require('../controllers/petController');
-const { Protect, AdminOnly } = require('../middleware/chain');
+const { Protect, AdminOnly } = require('../middleware/MiddlewareHandler');
 const router = express.Router();
 
 
-// Build a chain
+// Chain of responsibility
 const protect = new Protect();
 const adminOnly = new AdminOnly();
 protect.setNext(adminOnly); // Protect -> AdminOnly
 
-// Wrap the chain for Express
 const protectOnly = (req, res, next) => new Protect().handle(req, res, next);
 const protectAndAdmin = (req, res, next) => protect.handle(req, res, next);
-console.log("debug:",protectOnly)
 
 // Pets
 router.route('/')

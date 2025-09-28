@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Appointments from './pages/Appointment';
+import AppointmentsPet from './pages/AppointmentPet';
 import Pets from './pages/Pets';
 import PetDetails from './pages/PetDetails';
 import Home from './pages/Home';
@@ -20,6 +21,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/pets" element={<Pets />} />
         <Route path="/pets/:petId" element={<PetDetails />} />
+        <Route path="/pets/:petId/appointments" element={<AppointmentsPet />} />
         <Route path="/appointments" element={<Appointments />} />
       </Routes>
       <Footer />
