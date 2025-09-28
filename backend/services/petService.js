@@ -82,6 +82,7 @@ class TreatmentService {
 
         // create treatment instance to get treatment data
         const entityTreatment = new TreatmentEntity(treatment);
+        console.log(entityTreatment)
         console.log("debug", entityTreatment.toObject())
         // remove id from object to prepare for create
         const { _id, ...payload } = entityTreatment.toObject();

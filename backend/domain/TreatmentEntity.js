@@ -1,20 +1,28 @@
+const { PaymentContext, PaymentStrategy, CashPayment, CardPayment, ApplePayment } = require('../domain/PaymentStrategy');
+
+// Payment Stategy Mapping
+const PAYMENT_MAP = {
+  'Cash': new CashPayment(),
+  'Credit Card': new CardPayment(),
+  'Apple Pay': new ApplePayment(),
+};
+
 class TreatmentEntity {
   // encapsulation
-  #id; #petId; #userId;
+  #id; #petId;
   // constructor
   constructor({
     _id = null,
     petId,
-    userId,
+    vet,
     date,
     description,
     treatmentCost,
     medicineCost = 0,
-    totalCost = null,
     paymentMethod = null
   }) {
     // validate required fields
-    if (!petId || !userId || !date || !description) {
+    if (!petId || !vet || !date || !description) {
       throw new Error("Treatment: petId, userId, date, description are required");
     }
     if (typeof treatmentCost !== 'number' || treatmentCost < 0)
@@ -25,7 +33,7 @@ class TreatmentEntity {
     // encapsulated state with private fields id, name, owner
     this.#id = _id;
     this.#petId = petId;
-    this.#userId = userId;
+    this.vet = vet;
     this.date = new Date(date);
     this.description = description;
     this.treatmentCost = treatmentCost;
@@ -34,82 +42,37 @@ class TreatmentEntity {
     this.paymentMethod = null;    // Cash | Credit Card | Apple Pay
     this.paymentFee = 0;       // surcharge
 
-    // calculate totalCost & paymentFee
+    this.paymentContext = new PaymentContext();
+    this.setPaymentMethod(paymentMethod || 'Cash');
     this.#recalcTotal();
-    if (paymentMethod) this.setPaymentMethod(paymentMethod);
-    else this.#recalcFee();
   }
-
-  // Strategy pattern for payment methods
-  // Each payment method has it own surcharge
-  static #PAYMENT = {
-    'Cash': {
-      fee() {
-        return 0.00;
-      }
-    },
-    'Credit Card': {
-      fee() {
-        return 0.20;
-      }
-    },
-    'Apple Pay': {
-      fee() {
-        return 0.10;
-      }
-    },
-  };
 
   // Methods
   // set payment method and recalculate fee
   setPaymentMethod(method) {
+    const strategy = PAYMENT_MAP[method];
+    if (!strategy) throw new Error(`Unsupported payment method: ${method}`);
     this.paymentMethod = method;
-    this.#recalcFee();
+    this.paymentContext.setStrategy(strategy);
   }
 
-  // set costs and recalculate total & fee
-  setCosts({ treatmentCost, medicineCost } = {}) {
-    if (treatmentCost != null) {
-      this.treatmentCost = treatmentCost;
-    }
-    if (medicineCost != null) {
-      this.medicineCost = medicineCost;
-    }
-    this.#recalcTotal();
-    this.#recalcFee();
 
-  }
-
-  // total cost with surcharge
-  totalWithSurcharge() {
-    return this.totalCost + this.paymentFee;
-  }
-
-  // private methods to calculate total & fee
   #recalcTotal() {
-    this.totalCost = this.treatmentCost + this.medicineCost;
-  }
-
-  #recalcFee() {
-    if (!this.paymentMethod) { this.paymentFee = 0; return; }
-    const paymentStrategy = TreatmentEntity.#PAYMENT[this.paymentMethod];
-    // console.log('strategy pattern: ', paymentStrategy);
-    // console.log('payment Method: ', this.paymentMethod);
-    this.paymentFee = paymentStrategy.fee();
+    this.paymentFee = this.paymentContext.calcFee() || 0;
+    this.totalCost += (this.paymentFee + this.treatmentCost + this.medicineCost);
   }
 
   // mapping
   toObject() {
-    const total = this.totalCost + this.paymentFee;
     return {
       _id: this.#id,
       petId: this.#petId,
-      userId: this.#userId,
+      vet: this.vet,
       date: new Date(this.date),
       description: this.description,
       treatmentCost: this.treatmentCost,
       medicineCost: this.medicineCost,
-      totalCost: total,
+      totalCost: this.totalCost,
       paymentMethod: this.paymentMethod,
       paymentFee: this.paymentFee
     };

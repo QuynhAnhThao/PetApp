@@ -11,7 +11,6 @@ class UserFactory {
         throw new Error("Invalid role.")
     }
   }
-
 }
 
 module.exports = { UserFactory };

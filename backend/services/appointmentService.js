@@ -1,18 +1,42 @@
 const mongoose = require("mongoose");
 const AppointmentModel = require("../models/Appointment");
+const UserModel = require("../models/User");
+const PetModel = require("../models/Pet");
 const AppointmentEntity = require("../domain/AppointmentEntity");
 
 class AppointmentService {
   // Create appointment
   async createAppointment(app) {
+    // console.log(app)
     const entityApp = new AppointmentEntity(app);
     const createdApp = await AppointmentModel.create(entityApp.toObject());
-    return createdApp.toObject();
+    const [user, pet] = await Promise.all([UserModel.findOne({ _id: app.userId }).select("-password"), PetModel.findOne({ _id: app.petId })])
+
+    return {
+      ...createdApp.toObject(),
+      userId: user,
+      petId: pet
+    };
   }
 
   // Get appointments
-  async getAppointments() {
-    const apps = await AppointmentModel.find({}).lean();
+  async getAppointments(petId = null) {
+    let apps;
+    if (!petId) {
+      apps = await AppointmentModel.find({}).populate({
+        path: "userId",
+        select: "-password"
+      }).populate({
+        path: "petId"
+      }).lean();
+    } else {
+      apps = await AppointmentModel.find({ petId: petId }).populate({
+        path: "userId",
+        select: "-password"
+      }).populate({
+        path: "petId"
+      }).lean();
+    }
     if (!apps.length) throw new Error('No appointment exist. Please add new appointment.');
     // retrieve appoinments from db
     return apps;
@@ -38,30 +62,10 @@ class AppointmentService {
       id,
       entityApp.toObject(),
       { new: true, runValidators: true, overwrite: true }
-    ).lean();
+    ).populate({
+      path: "petId"
+    }).lean();
     return updatedApp;
-    // const doc = await AppointmentModel.findById(id);
-    // if (!doc) throw new Error("Appointment not found");
-
-    // const current = AppointmentEntity.fromPersistence(doc);
-
-    // const merged = {
-    //   ...current.toObject(),
-    //   ...(patch.userId !== undefined ? { userId: String(patch.userId) } : {}),
-    //   ...(patch.petId !== undefined ? { petId: String(patch.petId) } : {}),
-    //   ...(patch.date !== undefined ? { date: new Date(patch.date) } : {}),
-    //   ...(patch.description !== undefined ? { description: String(patch.description) } : {}),
-    //   _id: current._id
-    // };
-
-    // const next = new AppointmentEntity(merged);
-
-    // // giữ kiểu trả về giống trước đây (updateOne result)
-    // return await AppointmentModel.updateOne({ _id: id }, { $set: next.toObject() });
-
-    // Nếu muốn trả document sau cập nhật:
-    // const updated = await AppointmentModel.findByIdAndUpdate(id, next.toObject(), { new: true });
-    // return updated.toObject();
   }
 
   // DELETE
