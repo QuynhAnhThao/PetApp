@@ -45,6 +45,7 @@ const AppointmentsPet = () => {
         setEditingAppointment={setEditingAppointment}
         onSaved={fetchAppointments}
         petId={petId}
+        canCreate={true} 
       />
 
       {loading && (

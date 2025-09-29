@@ -3,8 +3,16 @@ import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../axiosConfig';
 
 
-const AppointmentForm = ({ appointments, setAppointments, editingAppointment, setEditingAppointment, petId }) => {
+const AppointmentForm = ({ 
+  appointments, 
+  setAppointments, 
+  editingAppointment, 
+  setEditingAppointment, 
+  petId,
+  canCreate = true }) => {
   const { user } = useAuth();
+  const isEditing = !!editingAppointment;
+  
 
   // form data state for all input fields
   const [formData, setFormData] = useState({
@@ -87,7 +95,8 @@ const AppointmentForm = ({ appointments, setAppointments, editingAppointment, se
       alert('Failed to save appointment.');
     }
   };
-
+  
+  if (!isEditing && !canCreate) return null;
   // return the form UI for creating or editing an appointment
   return (
     <form onSubmit={handleSubmit} className="bg-white p-6 shadow-md rounded mb-6">
