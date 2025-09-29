@@ -1,7 +1,7 @@
 const { PetService, TreatmentService } = require('../services/petService');
 const { UserEntity } = require('../domain/UserEntity');
-const { AdminOnlyProxy } = require('../domain/AdminProxy');
-const { UserFactory } = require('../domain/UserFactory');
+const { AdminOnlyProxy } = require('../patterns/AdminProxy');
+const { UserFactory } = require('../patterns/UserFactory');
 
 // Pet CRUD
 
@@ -58,7 +58,6 @@ const deletePet = async (req, res) => {
 const addTreatment = async (req, res) => {
   try {
     const treatment = { petId: req.params.id, ...req.body, userId: req.body.userId };
-    console.log(treatment)
     const createdTreatment = await TreatmentService.createTreatment(treatment);
     res.status(201).json(createdTreatment);
   } catch (err) { res.status(400).json({ message: err?.message || 'Failed to add treatment' }); }
